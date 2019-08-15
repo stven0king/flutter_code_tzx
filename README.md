@@ -15,3 +15,6 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.io/docs), which offers tutorials, 
 samples, guidance on mobile development, and a full API reference.
 
+![item_gank_home_page](img/gifhome-20190815164908/item_gank_home_page.gif)   ![flutter_gank_1](img/gifhome-20190815164908/flutter_gank_1.gif)
+![flutter_gank_2](img/gifhome-20190815164908/flutter_gank_2.gif)   ![flutter_gank_3](img/gifhome-20190815164908/flutter_gank_3.gif)
+
