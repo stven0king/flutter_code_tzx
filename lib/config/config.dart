@@ -14,7 +14,7 @@ const pageList = [
 ];
 
 Map<String, WidgetBuilder> routers = {
-  pageList[0]: (_) => Page(),
+  pageList[0]: (_) => MyPage(),
   pageList[1]: (BuildContext buildContext) => new MyHomePage(),
   pageList[2]: (BuildContext buildContext) => new BottomNavigationWidget(),
   pageList[3]: (_) => BigImagePreView(),

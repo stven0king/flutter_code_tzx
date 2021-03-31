@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_code_tzx/plugin/file_provider.dart' as FileUtils;
 
 
-class Page extends StatelessWidget{
+class MyPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     dynamic obj = ModalRoute.of(context).settings.arguments;
