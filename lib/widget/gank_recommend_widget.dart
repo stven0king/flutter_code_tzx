@@ -20,11 +20,13 @@ class GankRecommendPageState extends State<GankRecommendPage> {
   final String name;
   GankRecommendPageState(this.name);
   GankTodayDataEntiryEntity _currentData;
+  List<String> _bannerData;
   BuildContext context;
   @override
   void initState() {
     super.initState();
     getData();
+    getBannerData();
   }
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,7 @@ class GankRecommendPageState extends State<GankRecommendPage> {
         centerTitle: true,
         title: Text('今日'),
       ),
-      body: GankOneDayPage(_currentData),
+      body: GankOneDayPage(_currentData, _bannerData),
     );
   }
 
@@ -52,6 +54,38 @@ class GankRecommendPageState extends State<GankRecommendPage> {
           _currentData = entity;
         });
       }
+    });
+  }
+
+  /**
+   * 获取首页banner轮播数据
+   */
+  void getBannerData() {
+    String url = "https://gank.io/api/v2/banners";
+    print("tanzhenxing:setState:" + url);
+    HttpController.get(url, (data) {
+      if (data != null) {
+        final Map<String, dynamic> body = jsonDecode(data.toString());
+        final feeds = body["data"];
+        if (body['status'] == 100) {
+          var items = [];
+          if (feeds != null) {
+            feeds.forEach((item) {
+              items.add(item['image']);
+            });
+            if(items.length > 0) {
+              setState(() {
+                _bannerData = [];
+                _bannerData.addAll(items.cast<String>());
+              });
+            }
+          }
+        }
+      } else {
+        print("tanzhenxing:setState:" + 'error');
+      }
+    }, errorCallback: (data){
+      print("tanzhenxing:setState:error:" + data.toString());
     });
   }
 }

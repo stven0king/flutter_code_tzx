@@ -26,6 +26,9 @@ class ListImagePage extends State<GankMeiziListPage> {
   ListImagePage(this.name);
   int _pageName = 1; //加载的页数
   bool isLoading = false; //是否正在加载数据
+  /**
+   * 页码大小
+   */
   int _pageSize = 10;
   @override
   void initState() {
@@ -41,11 +44,12 @@ class ListImagePage extends State<GankMeiziListPage> {
   }
 
   void getData() {
-    String url = Gank.getGankDataModelApi(Gank.gank_data_type['meizhi'], _pageSize, _pageName);
+    String url = "https://gank.io/api/v2/data/category/Girl/type/Girl/page/$_pageName/count/$_pageSize";
+    // String url = Gank.getGankDataModelApi(Gank.gank_data_type['meizhi'], _pageSize, _pageName);
     HttpController.get(url, (data) {
       if (data != null) {
         final Map<String, dynamic> body = jsonDecode(data.toString());
-        final feeds = body["results"];
+        final feeds = body["data"];
         var items = [];
         if (feeds != null) {
           feeds.forEach((item) {

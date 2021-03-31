@@ -10,7 +10,8 @@ import 'package:quiver/strings.dart';
 
 class GankOneDayPage extends StatefulWidget {
   final GankTodayDataEntiryEntity _currentData;
-  GankOneDayPage(this._currentData);
+  List<String> _bannerData;
+  GankOneDayPage(this._currentData, this._bannerData);
   @override
   State<StatefulWidget> createState() {
     return new GankOneDayPageState();
@@ -22,6 +23,7 @@ class GankOneDayPageState extends State<GankOneDayPage> {
   GankTodayDataEntiryEntity _currentData;
   List<Object> _listData;
   BuildContext context;
+  List<String> _bannerData;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,11 @@ class GankOneDayPageState extends State<GankOneDayPage> {
   }
 
   Widget _getViewPage() {
-    return ViewPageWidget(_getMeizhiUrls());
+    List<String> data = _getMeizhiUrls();
+    if (data == null || data.isEmpty) {
+      return null;
+    }
+    return ViewPageWidget(data);
   }
 
 
@@ -45,10 +51,18 @@ class GankOneDayPageState extends State<GankOneDayPage> {
   }
 
   Widget _getListItemWidget(BuildContext context, int index) {
-    if (index == 0) {
-      return _getViewPage();
+    int targetIndex = index;
+    if (_getViewPage() != null) {
+      if(index == 0) {
+        return _getViewPage();
+      }
+      targetIndex = index - 1;
+    } else {
+      if(targetIndex >= _listData.length) {
+        return null;
+      }
     }
-    Object object = _listData[index - 1];
+    Object object = _listData[targetIndex];
     if (object is String) {
       return _getItemTitleWidget(object);
     } else {
@@ -72,7 +86,7 @@ class GankOneDayPageState extends State<GankOneDayPage> {
   }
 
   Widget _getItemBodyWidget(GankItemDataEntity e) {
-    String imageUrl;
+    String imageUrl = "null";
     if (e.images != null && e.images.length > 0) {
       imageUrl = e.images[0];
     }
@@ -191,15 +205,15 @@ class GankOneDayPageState extends State<GankOneDayPage> {
   }
 
   List<String> _getMeizhiUrls() {
-    List<String> result = [];
-    if (_currentData != null && _currentData.results != null && _currentData.results.meizhi != null) {
-      _currentData.results.meizhi.forEach((v){result.add(v.url);});
+    if(_bannerData == null) {
+      _bannerData = [];
     }
-    return result;
+    return _bannerData;
   }
 
   void _getListCount() {
     _currentData = widget._currentData;
+    _bannerData = widget._bannerData;
     _listData = [];
     if (_currentData == null || _currentData.error || _currentData.results == null) {
       Gank.gank_data_type.forEach((k, v){
@@ -240,4 +254,6 @@ class GankOneDayPageState extends State<GankOneDayPage> {
     }
     print('_getListCount:' + _listData.length.toString());
   }
+
+
 }

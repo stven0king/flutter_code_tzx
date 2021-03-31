@@ -22,7 +22,12 @@ class GankItemDataEntity {
 		type = json['type'];
 		url = json['url'];
 		desc = json['desc'];
-		who = json['who'];
+		String txt = json['author'];
+		if(txt != null && txt.isNotEmpty) {
+			who = txt;
+		} else {
+			who = json['who'];
+		}
 	}
 
 	Map<String, dynamic> toJson() {

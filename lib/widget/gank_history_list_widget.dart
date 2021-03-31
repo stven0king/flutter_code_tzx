@@ -4,11 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_code_tzx/framework/toast.dart';
 import 'package:flutter_code_tzx/http/http_controller.dart';
-import 'package:flutter_code_tzx/model/gank_config.dart';
 
-import '../model/gank_history_list_entity.dart';
-import '../model/gank_today_data_entity.dart';
 import '../config/config.dart';
+import '../model/gank_item_data_entity.dart';
+import '../model/gank_today_data_entity.dart';
 
 class GankHistoryListPage extends StatefulWidget {
   final String name;
@@ -27,9 +26,9 @@ class GankHistoryListState extends State<GankHistoryListPage> {
   BuildContext context;
   var _items = [];
   ScrollController _scrollController = ScrollController(); //listview的控制器
-  int _listIndex = 0; //加载的页数
+  int _listIndex = 1; //加载的页数
   bool isLoading = false; //是否正在加载数据
-  int _pageSize = 5;
+  int _pageSize = 10;
 
   @override
   void initState() {
@@ -69,7 +68,7 @@ class GankHistoryListState extends State<GankHistoryListPage> {
 
 
   Widget _getHistoryListItemWidget(BuildContext context, int index) {
-    GankTodayDataEntiryEntity itemBean = this._items[index];
+    GankItemDataEntity itemBean = this._items[index];
     double topPadding = 6;
     if (index == 0) {
       topPadding = 0;
@@ -84,7 +83,7 @@ class GankHistoryListState extends State<GankHistoryListPage> {
               child: CachedNetworkImage(
                 width: double.infinity,
                 height: 200,
-                imageUrl: itemBean.results.meizhi[0].url,
+                imageUrl: itemBean.images[0],
                 fit: BoxFit.cover,
               ),
               borderRadius: BorderRadius.circular(10.0),
@@ -93,7 +92,7 @@ class GankHistoryListState extends State<GankHistoryListPage> {
             Padding(
               padding: const EdgeInsets.only(left: 12, bottom: 30),
               child: Text(
-                itemBean.results.meizhi[0].desc,
+                itemBean.desc,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 23,
@@ -101,7 +100,7 @@ class GankHistoryListState extends State<GankHistoryListPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 12, top: 45),
+              padding: const EdgeInsets.only(left: 12, top: 55),
               child: Text(
                 _getTitle(itemBean),
                 maxLines: 2,
@@ -121,12 +120,10 @@ class GankHistoryListState extends State<GankHistoryListPage> {
     );
   }
 
-  String _getTitle(GankTodayDataEntiryEntity itemBean) {
+  String _getTitle(GankItemDataEntity itemBean) {
     String result = "";
-    if (itemBean != null && itemBean.results != null) {
-      if (itemBean.results.android != null && itemBean.results.android.length > 0) {
-        result = itemBean.results.android[0].desc;
-      }
+    if (itemBean != null) {
+      result = itemBean.who;
     }
     return result;
   }
@@ -164,27 +161,28 @@ class GankHistoryListState extends State<GankHistoryListPage> {
 
   //获取数据
   void getData() {
-    String url = Gank.getGankHistoryDayApi(GankHistoryListEntity.gankHistoryListEntity.results[_listIndex]);
-    print('gank_history_list:' + url);
+    String url = "https://gank.io/api/v2/data/category/Girl/type/Girl/page/$_listIndex/count/$_pageSize";
+    // String url = Gank.getGankDataModelApi(Gank.gank_data_type['meizhi'], _pageSize, _pageName);
+    print("tanzhenxing:url=" + url);
     HttpController.get(url, (data) {
       if (data != null) {
+        print("tanzhenxing:" + data.toString());
         final Map<String, dynamic> body = jsonDecode(data.toString());
-        GankTodayDataEntiryEntity entity = GankTodayDataEntiryEntity.fromJson(body);
-        if (!entity.error && entity.results.meizhi != null && entity.results.meizhi.length > 0) {
+        final feeds = body["data"];
+        var items = [];
+        if (feeds != null) {
+          feeds.forEach((item) {
+            items.add(GankItemDataEntity.fromJson(item));
+          });
           setState(() {
-            _items.add(entity);
-            _listIndex++;
-            _pageSize--;
-            if (_pageSize == 0) {
-              isLoading = false;
-              _pageSize = 5;
+            if (items.length == 0) {
+              print('到底了');
             } else {
-              getData();
+              _items.addAll(items);
+              _listIndex++;
+              isLoading = false;
             }
           });
-        } else {
-          _listIndex++;
-          getData();
         }
       }
     });

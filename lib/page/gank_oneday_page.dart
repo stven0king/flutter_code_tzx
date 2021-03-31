@@ -33,7 +33,7 @@ class GankOndDayDetailPageState extends State<GankOndDayDetailPage> {
       appBar: AppBar(
         title: Text(time),
       ),
-      body: GankOneDayPage(_currentData),
+      body: GankOneDayPage(_currentData, []),
     );
   }
 }
